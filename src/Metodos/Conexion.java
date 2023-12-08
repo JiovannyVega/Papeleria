@@ -7,7 +7,7 @@ import java.sql.Statement;
 import javax.swing.JOptionPane;
 
 public class Conexion {
-
+    
     private static Connection con;
     private static Statement st;
 
