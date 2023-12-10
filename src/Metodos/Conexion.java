@@ -54,4 +54,13 @@ public class Conexion {
         return true;
     }
 
+    public static ResultSet TablaInventario(ResultSet rs) {
+        try {
+            rs = st.executeQuery("SELECT * FROM productos");
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return rs;
+    }
+
 }

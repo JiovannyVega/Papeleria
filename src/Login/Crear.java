@@ -234,11 +234,14 @@ public class Crear extends javax.swing.JFrame {
         String usuario = txtUsuario.getText();
         String contraseña = txtContraseña.getText();
         String confirmarContraseña = txtConfirmarContraseña.getText();
-        System.out.println(usuario + contraseña + confirmarContraseña);
+        
         if (!usuario.isEmpty() && !contraseña.isEmpty() && !confirmarContraseña.isEmpty()) {
             if (contraseña.equals(confirmarContraseña)) {
                 if (conexion.SignUp(usuario, contraseña)) {
                     JOptionPane.showMessageDialog(this, "Cuenta creada exitosamente");
+                    Login login = new Login();
+                    login.setVisible(true);
+                    this.dispose();
                 } else {
                     txtUsuario.setText("");
                     txtContraseña.setText("");
