@@ -2,12 +2,13 @@ package Metodos;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import javax.swing.JOptionPane;
 
 public class Conexion {
-    
+
     private static Connection con;
     private static Statement st;
 
@@ -24,19 +25,33 @@ public class Conexion {
         }
     }
 
-    public static boolean login(String usuario, String contrseña) {
+    public static boolean LogIn(String usuario, String contraseña) {
         try {
             usuario = usuario.toUpperCase();
-            ResultSet rs = st.executeQuery("SELECT * FROM empleado WHERE usuario = '" + usuario + "' and contraseña ='" + contrseña + "'");
+            ResultSet rs = st.executeQuery("SELECT * FROM empleado WHERE usuario = '" + usuario + "' and contraseña ='" + contraseña + "'");
             if (rs.next()) {
                 return true;
-            } else {
-                return false;
             }
         } catch (Exception e) {
             System.out.println(e);
-            return false;
         }
+        return false;
+    }
+
+    public static boolean SignUp(String usuario, String contraseña) {
+        try {
+            usuario = usuario.toUpperCase();
+            ResultSet rs = st.executeQuery("SELECT * FROM empleado WHERE usuario = '" + usuario + "'");
+            if (rs.next()) {
+                return false;
+            } else {
+                st.executeUpdate("INSERT INTO empleado(usuario, contraseña) VALUES('" + usuario + "', '" + contraseña + "')");
+                return true;
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return true;
     }
 
 }

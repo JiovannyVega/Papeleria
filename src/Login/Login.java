@@ -208,7 +208,7 @@ public class Login extends javax.swing.JFrame {
     }//GEN-LAST:event_btnRegistrarseActionPerformed
 
     private void btnLogInActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogInActionPerformed
-        if (conexion.login(txtUsuario.getText(), txtContraseña.getText())) {
+        if (conexion.LogIn(txtUsuario.getText(), txtContraseña.getText())) {
             JOptionPane.showMessageDialog(this, "Ha iniciado sesion correctamente");
             Menu abrir = new Menu();
             abrir.setVisible(true);
