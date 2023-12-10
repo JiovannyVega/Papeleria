@@ -6,9 +6,14 @@
 package Inventario;
 
 import Metodos.Conexion;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.sql.ResultSet;
 import javax.swing.JTable;
+import javax.swing.RowFilter;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableRowSorter;
 import papeleria.Menu;
 import papeleria.Ventas;
 
@@ -19,6 +24,8 @@ import papeleria.Ventas;
 public class Inventario extends javax.swing.JFrame {
     Conexion conexion = new Conexion();
     DefaultTableModel model;
+    
+    private TableRowSorter tabInventario;
 
     /**
      * Creates new form Inventario
@@ -26,6 +33,7 @@ public class Inventario extends javax.swing.JFrame {
     public Inventario() {
         initComponents();
         iniciarTabla();
+        setFiltro();
         this.setLocationRelativeTo(null);
     }
 
@@ -52,11 +60,24 @@ public class Inventario extends javax.swing.JFrame {
                 PrecioU = rs.getString("precio_unitario");
                 Stock = rs.getInt("cantidad_stock");
                 
-                model.addRow(new Object[]{id, Nombre, PrecioU, Stock});
+                model.addRow(new Object[]{id, Nombre, "$" + PrecioU, Stock});
             }
         } catch (Exception err) {
             System.out.println(err);
         }
+        
+        TableColumnModel columnModel = tablaInventario.getColumnModel();
+        columnModel.getColumn(0).setPreferredWidth(20);
+        columnModel.getColumn(0).setMaxWidth(50);
+        columnModel.getColumn(2).setPreferredWidth(60);
+        columnModel.getColumn(2).setMaxWidth(60);
+        columnModel.getColumn(3).setPreferredWidth(40);
+        columnModel.getColumn(3).setMaxWidth(40);
+    }
+    
+    private void setFiltro() {
+        tabInventario = new TableRowSorter(tablaInventario.getModel());
+        tablaInventario.setRowSorter(tabInventario);
     }
 
     @SuppressWarnings("unchecked")
@@ -145,6 +166,17 @@ public class Inventario extends javax.swing.JFrame {
         txtBucar.setBackground(new java.awt.Color(235, 198, 83));
         txtBucar.setForeground(new java.awt.Color(0, 0, 0));
         txtBucar.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        txtBucar.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtBucarKeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtBucarKeyReleased(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtBucarKeyTyped(evt);
+            }
+        });
         getContentPane().add(txtBucar, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 380, 150, 30));
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -192,6 +224,19 @@ public class Inventario extends javax.swing.JFrame {
         abrir.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_btnRegresarActionPerformed
+
+    private void txtBucarKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBucarKeyTyped
+        tabInventario.setRowFilter(RowFilter.regexFilter(txtBucar.getText(), 1));
+    }//GEN-LAST:event_txtBucarKeyTyped
+
+    private void txtBucarKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBucarKeyPressed
+        //tabInventario.setRowFilter(RowFilter.regexFilter(txtBucar.getText(), 1));
+    }//GEN-LAST:event_txtBucarKeyPressed
+
+    private void txtBucarKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBucarKeyReleased
+        //tabInventario.setRowFilter(RowFilter.regexFilter(txtBucar.getText(), 1));
+    }//GEN-LAST:event_txtBucarKeyReleased
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel Fondo;
     private javax.swing.JButton btnBuscar;
