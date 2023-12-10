@@ -54,11 +54,19 @@ public class Conexion {
         return true;
     }
 
-    public static ResultSet TablaInventario(ResultSet rs) {
-        try {
-            rs = st.executeQuery("SELECT * FROM productos");
-        } catch (Exception e) {
-            System.out.println(e);
+    public static ResultSet TablaInventario(ResultSet rs, boolean porcentaje) {
+        if (porcentaje) {
+            try {
+                rs = st.executeQuery("SELECT * FROM productos");
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+        } else {
+            try {
+                rs = st.executeQuery("SELECT * FROM productos where cantidad_stock < 40");
+            } catch (Exception e) {
+                System.out.println(e);
+            }
         }
         return rs;
     }

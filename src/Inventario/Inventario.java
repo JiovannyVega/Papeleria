@@ -22,9 +22,11 @@ import papeleria.Ventas;
  * @author Rodrigo
  */
 public class Inventario extends javax.swing.JFrame {
+
     Conexion conexion = new Conexion();
     DefaultTableModel model;
-    
+    ResultSet rs = null;
+
     private TableRowSorter tabInventario;
 
     /**
@@ -38,10 +40,7 @@ public class Inventario extends javax.swing.JFrame {
     }
 
     private void iniciarTabla() {
-        String id = "", Nombre = "", PrecioU = "";
-        int Stock = 0;
 
-        
         model = new DefaultTableModel();
         tablaInventario.setModel(model);
 
@@ -50,22 +49,8 @@ public class Inventario extends javax.swing.JFrame {
         model.addColumn("Precio/U");
         model.addColumn("Stock");
         
-        ResultSet rs = null;
-        rs = conexion.TablaInventario(rs);
-        
-        try {
-            while (rs.next()) {
-                id = rs.getString("id");
-                Nombre = rs.getString("nombre");
-                PrecioU = rs.getString("precio_unitario");
-                Stock = rs.getInt("cantidad_stock");
-                
-                model.addRow(new Object[]{id, Nombre, "$" + PrecioU, Stock});
-            }
-        } catch (Exception err) {
-            System.out.println(err);
-        }
-        
+        stock(true);
+
         TableColumnModel columnModel = tablaInventario.getColumnModel();
         columnModel.getColumn(0).setPreferredWidth(20);
         columnModel.getColumn(0).setMaxWidth(50);
@@ -75,6 +60,30 @@ public class Inventario extends javax.swing.JFrame {
         columnModel.getColumn(3).setMaxWidth(40);
     }
     
+    private void stock(boolean bool) {
+        String id = "", Nombre = "", PrecioU = "";
+        int Stock = 0;
+        
+        model.getDataVector().removeAllElements();
+        rs = null;
+        rs = conexion.TablaInventario(rs, bool);
+
+        try {
+            while (rs.next()) {
+                id = rs.getString("id");
+                Nombre = rs.getString("nombre");
+                PrecioU = rs.getString("precio_unitario");
+                Stock = rs.getInt("cantidad_stock");
+
+                model.addRow(new Object[]{id, Nombre, "$" + PrecioU, Stock});
+            }
+        } catch (Exception err) {
+            System.out.println(err);
+        }
+        repaint();
+        
+    }
+
     private void setFiltro() {
         tabInventario = new TableRowSorter(tablaInventario.getModel());
         tablaInventario.setRowSorter(tabInventario);
@@ -199,6 +208,11 @@ public class Inventario extends javax.swing.JFrame {
         check40.setBackground(new java.awt.Color(235, 198, 83));
         check40.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
         check40.setLabel("40% Producto");
+        check40.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                check40ItemStateChanged(evt);
+            }
+        });
         getContentPane().add(check40, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 420, -1, -1));
 
         Fondo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/Inventario2.PNG"))); // NOI18N
@@ -236,6 +250,10 @@ public class Inventario extends javax.swing.JFrame {
     private void txtBucarKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBucarKeyReleased
         //tabInventario.setRowFilter(RowFilter.regexFilter(txtBucar.getText(), 1));
     }//GEN-LAST:event_txtBucarKeyReleased
+
+    private void check40ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_check40ItemStateChanged
+        stock(!check40.getState());
+    }//GEN-LAST:event_check40ItemStateChanged
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel Fondo;
