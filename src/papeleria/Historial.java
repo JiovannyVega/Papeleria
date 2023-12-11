@@ -26,64 +26,48 @@ public class Historial extends javax.swing.JFrame {
     DefaultTableModel modelTabla;
     Conexion conexion = new Conexion();
 
-    Map<Integer, TablaProductos> productos = new HashMap<Integer, TablaProductos>();
-    Map<String, Integer> mapa = new HashMap<>(0);
-    Map<Integer, Integer> mapaCantidad = new HashMap<>();
-
     /**
      * Creates new form Vender
      */
     public Historial() {
         initComponents();
-        iniciarCombobox();
         iniciarTabla();
         this.setLocationRelativeTo(null);
-        /*
-        for (Map.Entry<Integer, TablaProductos> entry : productos.entrySet()) {
-            System.out.println(entry.getValue().getNombre());
-        }*/
-    }
-
-    private void iniciarCombobox() {
-        String Nombre = "";
-        double PrecioU = 0.0;
-        int id = 0, Stock = 0;
-
-        ResultSet rs = null;
-        rs = conexion.TablaInventario(rs, true);
-
-        try {
-            while (rs.next()) {
-                id = rs.getInt("id");
-                Nombre = rs.getString("nombre");
-                PrecioU = rs.getDouble("precio_unitario");
-                Stock = rs.getInt("cantidad_stock");
-
-                mapa.put(rs.getString("nombre"), rs.getInt("id"));
-                productos.put(id, new TablaProductos(id, Stock, PrecioU, Nombre));
-
-            }
-        } catch (Exception err) {
-            System.out.println(err);
-        }
-
     }
 
     private void iniciarTabla() {
         modelTabla = new DefaultTableModel();
-        tablaCarrito.setModel(modelTabla);
+        tablaHistorial.setModel(modelTabla);
 
         modelTabla.addColumn("id");
         modelTabla.addColumn("Nombre");
         modelTabla.addColumn("Precio/U");
         modelTabla.addColumn("Cantidad");
         modelTabla.addColumn("Precio/T");
+        modelTabla.addColumn("Stock antiguo");
+        modelTabla.addColumn("Stock nuevo");
+        modelTabla.addColumn("Fecha / hora");
 
-        TableColumnModel columnModel = tablaCarrito.getColumnModel();
+        TableColumnModel columnModel = tablaHistorial.getColumnModel();
         columnModel.getColumn(0).setPreferredWidth(20);
         columnModel.getColumn(0).setMaxWidth(50);
+        
+        ResultSet rs = null;
+        rs = conexion.TablaHistorial(rs);
+        String s[] = new String[8];
+        String h[] = {"id_producto", "nombre", "precio_unidad", "cantidad", "precio_total", "stock_anterior", "stock_nuevo", "fecha"};
+        try {
+            while (rs.next()) {
+                for (int i = 0; i < 8; i++) {
+                    s[i] = rs.getString(h[i]);
+                }
+                modelTabla.addRow(new Object[]{s[0], s[1],"$" +  s[2], s[3], "$" + s[4], s[5], s[6], s[7]});
+            }
+        } catch (Exception err) {
+            System.out.println(err);
+        }
+        repaint();
 
-        //modelTabla.addRow(new Object[]{});
     }
 
     /**
@@ -96,17 +80,17 @@ public class Historial extends javax.swing.JFrame {
     private void initComponents() {
 
         jScrollPane1 = new javax.swing.JScrollPane();
-        tablaCarrito = new javax.swing.JTable();
+        tablaHistorial = new javax.swing.JTable();
         btnVolver = new javax.swing.JButton();
         Fondo = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        tablaCarrito.setBackground(new java.awt.Color(235, 198, 83));
-        tablaCarrito.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
-        tablaCarrito.setForeground(new java.awt.Color(0, 0, 0));
-        tablaCarrito.setModel(new javax.swing.table.DefaultTableModel(
+        tablaHistorial.setBackground(new java.awt.Color(235, 198, 83));
+        tablaHistorial.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
+        tablaHistorial.setForeground(new java.awt.Color(0, 0, 0));
+        tablaHistorial.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null},
                 {null, null, null, null, null},
@@ -130,11 +114,11 @@ public class Historial extends javax.swing.JFrame {
                 return types [columnIndex];
             }
         });
-        tablaCarrito.setCellSelectionEnabled(true);
-        tablaCarrito.setGridColor(new java.awt.Color(0, 0, 0));
-        jScrollPane1.setViewportView(tablaCarrito);
+        tablaHistorial.setCellSelectionEnabled(true);
+        tablaHistorial.setGridColor(new java.awt.Color(0, 0, 0));
+        jScrollPane1.setViewportView(tablaHistorial);
 
-        getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 220, 800, 170));
+        getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 220, 810, 220));
 
         btnVolver.setBackground(new java.awt.Color(235, 198, 83));
         btnVolver.setForeground(new java.awt.Color(0, 0, 0));
@@ -164,7 +148,7 @@ public class Historial extends javax.swing.JFrame {
     private javax.swing.JLabel Fondo;
     private javax.swing.JButton btnVolver;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable tablaCarrito;
+    private javax.swing.JTable tablaHistorial;
     // End of variables declaration//GEN-END:variables
 
 }

@@ -108,5 +108,14 @@ public class Conexion {
             System.out.println(e);
         }
     }
+    
+    public static ResultSet TablaHistorial(ResultSet rs) {
+        try {
+            rs = st.executeQuery("Select * from venta");
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return rs;
+    }
 
 }
