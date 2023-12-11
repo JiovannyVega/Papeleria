@@ -143,6 +143,8 @@ public class Inventario extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        tablaInventario.getTableHeader().setResizingAllowed(false);
+        tablaInventario.getTableHeader().setReorderingAllowed(false);
         jScrollPane1.setViewportView(tablaInventario);
 
         getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 240, 560, 130));

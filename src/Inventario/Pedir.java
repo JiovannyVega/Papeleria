@@ -109,7 +109,7 @@ public class Pedir extends javax.swing.JFrame {
                 comboProductoItemStateChanged(evt);
             }
         });
-        getContentPane().add(comboProducto, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 250, 170, -1));
+        getContentPane().add(comboProducto, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 260, 170, -1));
 
         jLabel3.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(0, 0, 0));
