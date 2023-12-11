@@ -61,8 +61,8 @@ public class Inventario extends javax.swing.JFrame {
     }
     
     private void stock(boolean bool) {
-        String id = "", Nombre = "", PrecioU = "";
-        int Stock = 0;
+        String Nombre = "", PrecioU = "";
+        int id = 0, Stock = 0;
         
         model.getDataVector().removeAllElements();
         rs = null;
@@ -70,7 +70,7 @@ public class Inventario extends javax.swing.JFrame {
 
         try {
             while (rs.next()) {
-                id = rs.getString("id");
+                id = rs.getInt("id");
                 Nombre = rs.getString("nombre");
                 PrecioU = rs.getString("precio_unitario");
                 Stock = rs.getInt("cantidad_stock");
@@ -207,7 +207,7 @@ public class Inventario extends javax.swing.JFrame {
 
         check40.setBackground(new java.awt.Color(235, 198, 83));
         check40.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
-        check40.setLabel("40% Producto");
+        check40.setLabel("Menos de 40% stock");
         check40.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 check40ItemStateChanged(evt);

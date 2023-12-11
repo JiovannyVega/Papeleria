@@ -71,4 +71,26 @@ public class Conexion {
         return rs;
     }
 
+    public static int getStock(int id) {
+        int stock = 0;
+
+        try {
+            ResultSet rs = st.executeQuery("SELECT cantidad_stock FROM productos WHERE id = " + id);
+            rs.next();
+            stock = rs.getInt("cantidad_stock");
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+
+        return stock;
+    }
+
+    public static void addStock(int id, int cantidad) {
+        try {
+            st.executeUpdate("UPDATE productos SET cantidad_stock = cantidad_stock + " + cantidad + " where id = " + id);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
 }

@@ -219,7 +219,7 @@
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="Dialog" size="12" style="1"/>
         </Property>
-        <Property name="label" type="java.lang.String" value="40% Producto"/>
+        <Property name="label" type="java.lang.String" value="Menos de 40% stock"/>
       </Properties>
       <Events>
         <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="check40ItemStateChanged"/>
