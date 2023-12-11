@@ -17,8 +17,8 @@ public class Papeleria {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-     Inicio I=new Inicio();
-     I.setVisible(true);
+        Inicio I = new Inicio();
+        I.setVisible(true);
     }
-    
+
 }

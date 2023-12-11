@@ -92,5 +92,21 @@ public class Conexion {
             System.out.println(e);
         }
     }
+    
+    public static void comprar(TablaProductos tabla, int cantidad) {
+        int id = tabla.getId();
+        String nombre = tabla.getNombre();
+        double precio_unidad = tabla.getPrecio();
+        int stock = getStock(id);
+        
+        try {
+            st.executeUpdate("UPDATE productos SET cantidad_stock = cantidad_stock - " + cantidad + " where id = " + id);
+            
+            st.executeUpdate("INSERT into venta(id_producto, nombre, precio_unidad, cantidad, precio_total, stock_anterior, stock_nuevo) "
+                    + "VALUES(" + id + ", '" + nombre + "', " + precio_unidad + ", " + cantidad + ", " + (cantidad * precio_unidad) + ", " + stock + ", " + (stock - cantidad) + ")");
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
 
 }

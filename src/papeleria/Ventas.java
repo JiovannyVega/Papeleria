@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
@@ -25,7 +26,7 @@ public class Ventas extends javax.swing.JFrame {
     DefaultComboBoxModel<String> modelCombo = new DefaultComboBoxModel<>();
     DefaultTableModel modelTabla;
     Conexion conexion = new Conexion();
-    
+
     Map<Integer, TablaProductos> productos = new HashMap<Integer, TablaProductos>();
     Map<String, Integer> mapa = new HashMap<>(0);
     Map<Integer, Integer> mapaCantidad = new HashMap<>();
@@ -42,13 +43,14 @@ public class Ventas extends javax.swing.JFrame {
         for (Map.Entry<Integer, TablaProductos> entry : productos.entrySet()) {
             System.out.println(entry.getValue().getNombre());
         }*/
+        btnRealizarCompra.setVisible(false);
     }
 
     private void iniciarCombobox() {
         String Nombre = "";
         double PrecioU = 0.0;
         int id = 0, Stock = 0;
-        
+
         ResultSet rs = null;
         rs = conexion.TablaInventario(rs, true);
 
@@ -58,10 +60,10 @@ public class Ventas extends javax.swing.JFrame {
                 Nombre = rs.getString("nombre");
                 PrecioU = rs.getDouble("precio_unitario");
                 Stock = rs.getInt("cantidad_stock");
-                
+
                 mapa.put(rs.getString("nombre"), rs.getInt("id"));
                 productos.put(id, new TablaProductos(id, Stock, PrecioU, Nombre));
-                
+
                 modelCombo.addElement(rs.getString("nombre"));
             }
         } catch (Exception err) {
@@ -70,36 +72,54 @@ public class Ventas extends javax.swing.JFrame {
 
         AutoCompleteDecorator.decorate(comboProducto);
     }
-    
+
     private void iniciarTabla() {
         modelTabla = new DefaultTableModel();
         tablaCarrito.setModel(modelTabla);
-        
+
         modelTabla.addColumn("id");
         modelTabla.addColumn("Nombre");
         modelTabla.addColumn("Precio/U");
         modelTabla.addColumn("Cantidad");
         modelTabla.addColumn("Precio/T");
-        
+
         TableColumnModel columnModel = tablaCarrito.getColumnModel();
         columnModel.getColumn(0).setPreferredWidth(20);
         columnModel.getColumn(0).setMaxWidth(50);
-        
+
         //modelTabla.addRow(new Object[]{});
     }
-    
+
     private void agregarProducto(String nombre, int cantidad) {
         int id = mapa.get(nombre);
         TablaProductos tabla = productos.get(id);
-        
+
         for (int i = 0; i < modelTabla.getRowCount(); i++) {
             if ((Integer) modelTabla.getValueAt(i, 0) == id) {
                 modelTabla.removeRow(i);
             }
         }
-        
+
         mapaCantidad.put(id, ((mapaCantidad.get(id)) != null ? mapaCantidad.get(id) + cantidad : cantidad));
         modelTabla.addRow(new Object[]{tabla.getId(), tabla.getNombre(), "$" + tabla.getPrecio(), mapaCantidad.get(id), "$" + (tabla.getPrecio() * mapaCantidad.get(id))});
+        double precioTotal = 0;
+        for (int i = 0; i < modelTabla.getRowCount(); i++) {
+            String s = modelTabla.getValueAt(i, 4).toString().substring(1);
+            precioTotal += Double.parseDouble(s);
+        }
+        txtPrecioTotal.setText("$" + precioTotal);
+    }
+
+    private void realizarCompra() {
+        int rows = modelTabla.getRowCount();
+        for (int i = 0; i < rows; i++) {
+            int id = (Integer) modelTabla.getValueAt(0, 0);
+            int cantidad = (Integer) modelTabla.getValueAt(0, 3);
+            conexion.comprar(productos.get(id), cantidad);
+            modelTabla.removeRow(0);
+        }
+        mapaCantidad.clear();
+        repaint();
     }
 
     /**
@@ -122,6 +142,7 @@ public class Ventas extends javax.swing.JFrame {
         btnAgregar = new javax.swing.JButton();
         txtPrecioTotal = new javax.swing.JTextField();
         btnVolver = new javax.swing.JButton();
+        btnRealizarCompra = new javax.swing.JButton();
         Fondo = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -228,6 +249,17 @@ public class Ventas extends javax.swing.JFrame {
         });
         getContentPane().add(btnVolver, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 110, 80, 30));
 
+        btnRealizarCompra.setBackground(new java.awt.Color(235, 198, 83));
+        btnRealizarCompra.setFont(new java.awt.Font("Dialog", 1, 13)); // NOI18N
+        btnRealizarCompra.setForeground(new java.awt.Color(0, 0, 0));
+        btnRealizarCompra.setText("Realizar compra");
+        btnRealizarCompra.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRealizarCompraActionPerformed(evt);
+            }
+        });
+        getContentPane().add(btnRealizarCompra, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 400, 160, -1));
+
         Fondo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/Inventario2.PNG"))); // NOI18N
         getContentPane().add(Fondo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 900, -1));
 
@@ -235,12 +267,15 @@ public class Ventas extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
+        Historial historial = new Historial();
+        historial.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed
         agregarProducto(comboProducto.getSelectedItem().toString(), (Integer) spinnerCantidad.getValue());
         spinnerCantidad.setValue(1);
+        btnRealizarCompra.setVisible(true);
     }//GEN-LAST:event_btnAgregarActionPerformed
 
     private void btnVolverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVolverActionPerformed
@@ -252,10 +287,25 @@ public class Ventas extends javax.swing.JFrame {
     private void comboProductoItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_comboProductoItemStateChanged
     }//GEN-LAST:event_comboProductoItemStateChanged
 
+    private void btnRealizarCompraActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRealizarCompraActionPerformed
+        //int i = JOptionPane.showConfirmDialog(this, "Quieres?");
+        //System.out.println(i);
+        switch (JOptionPane.showConfirmDialog(this, "Desea realizar la compra por " + txtPrecioTotal.getText() + "?")) {
+            case 0:
+                realizarCompra();
+                btnRealizarCompra.setVisible(false);
+                break;
+            case 1:
+                System.out.println("no ok");
+                break;
+        }
+    }//GEN-LAST:event_btnRealizarCompraActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel Fondo;
     private javax.swing.JButton btnAgregar;
+    private javax.swing.JButton btnRealizarCompra;
     private javax.swing.JButton btnVolver;
     private javax.swing.JComboBox<String> comboProducto;
     private javax.swing.JButton jButton1;
